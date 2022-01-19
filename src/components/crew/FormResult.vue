@@ -13,5 +13,6 @@ export default {
 <style scoped>
 li {
   padding: 0.25rem 0;
+  font-weight: bold;
 }
 </style>

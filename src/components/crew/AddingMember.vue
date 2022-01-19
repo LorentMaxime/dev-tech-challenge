@@ -6,6 +6,7 @@
       <label for="name">Nom de l&apos;Argonaute</label>
       <input id="name" name="name" type="text" size="30" placeholder="Inserez le nom de l'argonaute" v-model.trim="enteredName"/>
       <p v-if="invalidInput">Entrez un Argonaute svp</p>
+      <p v-if="error">{{ error }}</p>
       <div>
         <base-button>Envoyer</base-button>
       </div>
@@ -19,6 +20,7 @@ export default {
     return {
       enteredName: '',
       invalidInput: false,
+      error: null,
     }
   },
   // emits: ['form-submit'],
@@ -41,8 +43,19 @@ export default {
           'Content-type': 'application/json'
         },
         body: JSON.stringify({
-          name: this.enteredName
+          name: this.enteredName,
         }),
+      })
+          .then(response => {
+        if (response.ok) {
+          // to do ...
+        } else {
+          throw new Error('Les données n\'ont pas pu etre sauvegardées - réessayer plus tard!');
+        }
+      })
+          .catch((error) => {
+        console.log(error);
+        this.error = error.message;
       });
 
       this.enteredName = '';

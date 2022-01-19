@@ -5,7 +5,10 @@
     <div class="load-members">
       <base-button @click="loadArgonautes">Charger les Argonautes</base-button>
     </div>
-    <section class="member-list">
+    <p v-if="isLoading">Loading ... </p>
+    <p v-else-if="!isLoading && error">{{ error }}</p>
+    <p v-else-if="!isLoading && (!results || results.length === 0)">Il n'y a pas d'Argonautes enregistré(e)s pour le moment. Commencez à en ajouter !</p>
+    <section class="member-list" v-else>
       <div class="member-item">
         <ul>
           <form-result v-for="result in results"
@@ -28,12 +31,16 @@ export default {
   data() {
     return {
       results: [],
+      isLoading: false,
+      error: null,
     }
   },
   methods: {
     loadArgonautes() {
-      // const url = 'https://dev-tech-challenge-default-rtdb.europe-west1.firebasedatabase.app/surveys.json';
-      fetch('https://dev-tech-challenge-default-rtdb.europe-west1.firebasedatabase.app/surveys.json')
+      const url = 'https://dev-tech-challenge-default-rtdb.europe-west1.firebasedatabase.app/surveys.json';
+      this.isLoading = true;
+      this.error = null;
+      fetch(url)
           .then((response) => {
               if(response.ok) {
                 return response.json();
@@ -41,6 +48,7 @@ export default {
             }
           ).then((data) =>{
             const results = [];
+            this.isLoading = false;
             for(const id in data) {
               results.push ({
                 id: id,
@@ -48,6 +56,11 @@ export default {
               });
             }
             this.results = results;
+      })
+      .catch((error) =>{
+        console.log(error);
+        this.isLoading = false;
+        this.error = 'OUPS, il semble qu\'il y ai un probleme pour recuperer les données - revenez plus tard!'
       });
     },
   },
